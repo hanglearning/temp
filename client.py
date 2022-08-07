@@ -59,56 +59,83 @@ class Client():
         prune_rate = get_prune_summary(model=self.global_model,
                                        name='weight')['global']
         print('Global model prune percentage: {}'.format(prune_rate))
-                
-        # 0 is the starting pruning difficulty
-        curr_diff = round(min(self.args.prune_threshold, 0 + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
-           
-        if self.cur_prune_rate < self.args.prune_threshold:
-            if accuracy > self.eita:
-                self.cur_prune_rate = min(self.cur_prune_rate + self.args.prune_step,
-                                          self.args.prune_threshold)
-                if self.cur_prune_rate > prune_rate:
-                    print("pruned amount by weights before l1:", get_pruned_amount_by_weights(self.global_model))
-                    print("get_pruned_amount_by_weights", get_pruned_amount_by_weights(self.global_model), "==", prune_rate)
-                    print("get_pruned_amount_by_mask", get_pruned_amount_by_mask(self.global_model), "==", prune_rate)
-                    l1_prune(model=self.global_model,
-                             amount=self.cur_prune_rate - prune_rate,
-                             name='weight',
-                             verbose=self.args.prune_verbose)
-                    print("get_pruned_amount_by_mask", get_pruned_amount_by_mask(self.global_model), "==", prune_rate)
-                    print("===============================")
-                    print("self.cur_prune_rate", self.cur_prune_rate)
-                    print("prune_rate", prune_rate)
-                    print("amount", self.cur_prune_rate - prune_rate)
-                    print("pruned amount by weights:", get_pruned_amount_by_weights(self.global_model))
-                    print(get_pruned_amount_by_weights(self.global_model), "==", self.cur_prune_rate - prune_rate)
-                    print("===============================")
-                    self.prune_rates.append(self.cur_prune_rate)
-                    print()
-                else:
-                    self.prune_rates.append(prune_rate)
+
+        if self.args.HANG:
+                    
+            start_diff = 0
+            curr_diff = round(min(self.args.prune_threshold, start_diff + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
+            
+            params_pruned = get_prune_params(self.global_model, name='weight')
+            for param, name in params_pruned:
+                prune.remove(param, name)
+            
+            l1_prune(model=self.global_model,
+                    amount=curr_diff,
+                    name='weight',
+                    verbose=self.args.prune_verbose)
+            print(f"{self.idx} pruned {curr_diff} in round {self.elapsed_comm_rounds + 1}.")
+            
+            prune_rate = get_prune_summary(model=self.global_model,name='weight')['global']
+            print(f"Sparcity {1 - get_prune_summary(model=self.global_model,name='weight')['global']}")
+
+            if self.elapsed_comm_rounds > 0 and self.elapsed_comm_rounds % self.args.diff_freq == 0:
                 # reinitialize model with init_params
                 source_params = dict(self.global_init_model.named_parameters())
                 for name, param in self.global_model.named_parameters():
                     param.data.copy_(source_params[name].data)
+                print(f"{self.idx} reinited in round {self.elapsed_comm_rounds + 1}.")
 
-                self.model = self.global_model
-                self.eita = self.eita_hat
-
-            else:
-                self.eita *= self.alpha
-                self.model = self.global_model
-                self.prune_rates.append(prune_rate)
-        else:
-            if self.cur_prune_rate > prune_rate:
-                l1_prune(model=self.global_model,
-                         amount=self.cur_prune_rate-prune_rate,
-                         name='weight',
-                         verbose=self.args.prune_verbose)
-                self.prune_rates.append(self.cur_prune_rate)
-            else:
-                self.prune_rates.append(self.cur_prune_rate)
+            self.prune_rates.append(prune_rate)
             self.model = self.global_model
+
+        else:
+
+            if self.cur_prune_rate < self.args.prune_threshold:
+                if accuracy > self.eita:
+                    self.cur_prune_rate = min(self.cur_prune_rate + self.args.prune_step,
+                                            self.args.prune_threshold)
+                    if self.cur_prune_rate > prune_rate:
+                        # print("pruned amount by weights before l1:", get_pruned_amount_by_weights(self.global_model))
+                        # print("get_pruned_amount_by_weights", get_pruned_amount_by_weights(self.global_model), "==", prune_rate)
+                        # print("get_pruned_amount_by_mask", get_pruned_amount_by_mask(self.global_model), "==", prune_rate)
+                        l1_prune(model=self.global_model,
+                                amount=self.cur_prune_rate - prune_rate,
+                                name='weight',
+                                verbose=self.args.prune_verbose)
+                        # print("get_pruned_amount_by_mask", get_pruned_amount_by_mask(self.global_model), "==", prune_rate)
+                        # print("===============================")
+                        # print("self.cur_prune_rate", self.cur_prune_rate)
+                        # print("prune_rate", prune_rate)
+                        # print("amount", self.cur_prune_rate - prune_rate)
+                        # print("pruned amount by weights:", get_pruned_amount_by_weights(self.global_model))
+                        # print(get_pruned_amount_by_weights(self.global_model), "==", self.cur_prune_rate - prune_rate)
+                        # print("===============================")
+                        self.prune_rates.append(self.cur_prune_rate)
+                        # print()
+                    else:
+                        self.prune_rates.append(prune_rate)
+                    # reinitialize model with init_params
+                    source_params = dict(self.global_init_model.named_parameters())
+                    for name, param in self.global_model.named_parameters():
+                        param.data.copy_(source_params[name].data)
+
+                    self.model = self.global_model
+                    self.eita = self.eita_hat
+
+                else:
+                    self.eita *= self.alpha
+                    self.model = self.global_model
+                    self.prune_rates.append(prune_rate)
+            else:
+                if self.cur_prune_rate > prune_rate:
+                    l1_prune(model=self.global_model,
+                            amount=self.cur_prune_rate-prune_rate,
+                            name='weight',
+                            verbose=self.args.prune_verbose)
+                    self.prune_rates.append(self.cur_prune_rate)
+                else:
+                    self.prune_rates.append(self.cur_prune_rate)
+                self.model = self.global_model
 
         print(f"\nTraining local model")
         self.train(self.elapsed_comm_rounds)

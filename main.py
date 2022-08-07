@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--n_samples', type=int, default=20)
-    parser.add_argument('--n_class', type=int, default=2)
+    parser.add_argument('--n_class', type=int, default=3)
     parser.add_argument('--eita', type=float, default=0.5,
                         help="accuracy threshold")
     parser.add_argument('--alpha', type=float, default=0.5,
@@ -63,6 +63,8 @@ if __name__ == "__main__":
     parser.add_argument('--num_workers', type=int, default=0)
     
     parser.add_argument('--diff_freq', type=int, default=5)
+    parser.add_argument('--project_name', type=str, default="CELL_dummy")
+    parser.add_argument('--HANG', type=int, default=1)
 
     args = parser.parse_args()
 
@@ -84,9 +86,11 @@ if __name__ == "__main__":
         client = Client(i, args, train_loaders[i], test_loaders[i], global_test_loader)
         clients.append(client)
 
+    run_name = "HANG" if args.HANG else "CELL"
+    
     wandb.login()
-    wandb.init(project="CELL_dummy", entity="hangchen")
-    wandb.run.name = datetime.now().strftime("%m%d%Y_%H%M%S")
+    wandb.init(project=args.project_name, entity="hangchen")
+    wandb.run.name = datetime.now().strftime(f"{run_name}_clients_{args.num_clients}_classes_{args.n_class}_samples_{args.n_samples}_%m%d%Y_%H%M%S")
     wandb.config.update(args)
 
     server = Server(args, model, clients)

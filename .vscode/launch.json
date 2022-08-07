@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "args": ["--diff_freq", "2", "--project_name", "CELL_modify_inc", "--num_clients", "20", "--HANG", "0"]
         }
     ]
 }
