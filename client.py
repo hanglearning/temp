@@ -78,12 +78,14 @@ class Client():
             prune_rate = get_prune_summary(model=self.global_model,name='weight')['global']
             print(f"Sparcity {1 - get_prune_summary(model=self.global_model,name='weight')['global']}")
 
-            if self.elapsed_comm_rounds > 0 and self.elapsed_comm_rounds % self.args.diff_freq == 0:
-                # reinitialize model with init_params
-                source_params = dict(self.global_init_model.named_parameters())
-                for name, param in self.global_model.named_parameters():
-                    param.data.copy_(source_params[name].data)
-                print(f"{self.idx} reinited in round {self.elapsed_comm_rounds + 1}.")
+            # how about do not reinit
+            if self.args.reinit:
+                if self.elapsed_comm_rounds > 0 and self.elapsed_comm_rounds % self.args.diff_freq == 0:
+                    # reinitialize model with init_params
+                    source_params = dict(self.global_init_model.named_parameters())
+                    for name, param in self.global_model.named_parameters():
+                        param.data.copy_(source_params[name].data)
+                    print(f"{self.idx} reinited in round {self.elapsed_comm_rounds + 1}.")
 
             self.prune_rates.append(prune_rate)
             self.model = self.global_model

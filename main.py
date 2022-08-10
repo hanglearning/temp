@@ -63,6 +63,8 @@ if __name__ == "__main__":
     parser.add_argument('--num_workers', type=int, default=0)
     
     parser.add_argument('--diff_freq', type=int, default=5)
+    parser.add_argument('--rewind', type=int, default=0)
+    parser.add_argument('--reinit', type=int, default=1)
     parser.add_argument('--project_name', type=str, default="CELL_dummy")
     parser.add_argument('--HANG', type=int, default=1)
 

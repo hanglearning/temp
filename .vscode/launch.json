@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--diff_freq", "2", "--project_name", "CELL_modify_inc", "--num_clients", "20", "--HANG", "0"]
+            "args": ["--diff_freq", "2", "--project_name", "CELL_modify_inc", "--num_clients", "20", "--rewind", "1", "--HANG", "0"]
         }
     ]
 }
