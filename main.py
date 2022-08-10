@@ -66,6 +66,7 @@ if __name__ == "__main__":
     parser.add_argument('--rewind', type=int, default=0)
     parser.add_argument('--reinit', type=int, default=1)
     parser.add_argument('--project_name', type=str, default="CELL_dummy")
+    parser.add_argument('--run_note', type=str, default="")
     parser.add_argument('--HANG', type=int, default=1)
 
     args = parser.parse_args()
@@ -92,7 +93,7 @@ if __name__ == "__main__":
     
     wandb.login()
     wandb.init(project=args.project_name, entity="hangchen")
-    wandb.run.name = datetime.now().strftime(f"{run_name}_clients_{args.num_clients}_classes_{args.n_class}_samples_{args.n_samples}_%m%d%Y_%H%M%S")
+    wandb.run.name = datetime.now().strftime(f"{run_name}_clients_{args.num_clients}_classes_{args.n_class}_samples_{args.n_samples}_{args.run_note}_%m%d%Y_%H%M%S")
     wandb.config.update(args)
 
     server = Server(args, model, clients)
