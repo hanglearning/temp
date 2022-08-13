@@ -145,4 +145,10 @@ def get_data_noniid_mnist(num_users, n_class, nsamples, batch_size=32, rate_unba
             test_data, batch_sampler=sampler_test)
         test_loaders.append(loader_test)
 
-    return train_loaders, test_loaders
+    # create global_test_loader (test ticket model before reapplying mask)
+    global_test = torch.utils.data.BatchSampler(
+            torch.utils.data.SubsetRandomSampler(list(range(10000))), batch_size, drop_last=False)
+    global_test_loader = torch.utils.data.DataLoader(
+        test_data, batch_sampler=global_test, num_workers=num_workers)
+
+    return train_loaders, test_loaders, global_test_loader

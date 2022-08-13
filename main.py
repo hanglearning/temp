@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     model = create_model(cls=models[args.dataset]
                          [args.arch], device=args.device)
-
+    
     train_loaders, test_loaders, global_test_loader = DataLoaders(num_users=args.num_clients,
                                               dataset_name=args.dataset,
                                               n_class=args.n_class,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     
     wandb.login()
     wandb.init(project=args.project_name, entity="hangchen")
-    wandb.run.name = datetime.now().strftime(f"{run_name}_clients_{args.num_clients}_classes_{args.n_class}_samples_{args.n_samples}_{args.run_note}_%m%d%Y_%H%M%S")
+    wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_{args.run_note}_%m%d%Y_%H%M%S")
     wandb.config.update(args)
 
     server = Server(args, model, clients)
