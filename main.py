@@ -43,9 +43,9 @@ if __name__ == "__main__":
     parser.add_argument('--server_prune_step', type=float, default=0.2)
     parser.add_argument('--server_prune_freq', type=int, default=10)
     parser.add_argument('--frac_clients_per_round', type=float, default=1.0)
-    parser.add_argument('--epochs', type=int, default=10)
-    parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=1e-3)
+    parser.add_argument('--epochs', type=int, default=5)
+    parser.add_argument('--batch_size', type=int, default=10)
+    parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--n_samples', type=int, default=20)
     parser.add_argument('--n_class', type=int, default=3)
     parser.add_argument('--eita', type=float, default=0.5,
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     parser.add_argument('--project_name', type=str, default="CELL_dummy")
     parser.add_argument('--run_note', type=str, default="")
     parser.add_argument('--HANG', type=int, default=1)
+    parser.add_argument('--no_prune', type=int, default=0)
 
     args = parser.parse_args()
 

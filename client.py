@@ -90,6 +90,10 @@ class Client():
             self.prune_rates.append(prune_rate)
             self.model = self.global_model
 
+        elif self.args.no_prune:
+            self.prune_rates.append(1.0)
+            self.model = self.global_model
+
         else:
 
             if self.cur_prune_rate < self.args.prune_threshold:
