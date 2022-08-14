@@ -20,7 +20,7 @@ def get_dataset_mnist_extr_noniid(num_users, n_class, nsamples, rate_unbalance):
 
 
 def mnist_extr_noniid(train_dataset, test_dataset, num_users, n_class, num_samples, rate_unbalance):
-    num_shards_train, num_imgs_train = int(60000/num_samples), num_samples
+    num_shards_train, num_imgs_train = int(50000/num_samples), num_samples
     num_classes = 10
     num_imgs_perc_test, num_imgs_test_total = 1000, 10000
 
