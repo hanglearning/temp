@@ -30,12 +30,12 @@ models = {
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', help="mnist|cifar10",
-                        type=str, default="cifar10")
+                        type=str, default="mnist")
     parser.add_argument('--arch', type=str, default='cnn', help='cnn|mlp')
     parser.add_argument('--dataset_mode', type=str,
                         default='non-iid', help='non-iid|iid')
     parser.add_argument('--rate_unbalance', type=float, default=1.0)
-    parser.add_argument('--num_clients', type=int, default=6)
+    parser.add_argument('--num_clients', type=int, default=20)
     parser.add_argument('--rounds', type=int, default=40)
     parser.add_argument('--prune_step', type=float, default=0.2)
     parser.add_argument('--prune_threshold', type=float, default=0.8)
@@ -90,11 +90,16 @@ if __name__ == "__main__":
         client = Client(i, args, train_loaders[i], test_loaders[i], global_test_loader)
         clients.append(client)
 
-    run_name = "HANG" if args.HANG else "CELL"
+    if args.HANG:
+        run_name = "HANG" 
+    elif args.no_prune:
+        run_name = "NOPRUNE" 
+    else:
+        run_name = "CELL"
     
     wandb.login()
     wandb.init(project=args.project_name, entity="hangchen")
-    wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_{args.run_note}_%m%d%Y_%H%M%S")
+    wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_seed_{arg.seed}_{args.run_note}_%m%d%Y_%H%M%S")
     wandb.config.update(args)
 
     server = Server(args, model, clients)
