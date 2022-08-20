@@ -99,7 +99,16 @@ class Server():
 
         # call training loop on all clients
         for client in clients:
-            client.update()
+            if self.args.stand_alone:
+                client.update_standalone()
+            elif self.args.stand_alone_prune:
+                client.update_standalone_prune()
+            else:
+                client.update()
+
+        if self.args.stand_alone or self.args.stand_alone_prune:
+            import sys
+            sys.exit()
 
         # download models from selected clients
         models, accs = self.download(clients)

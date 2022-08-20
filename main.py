@@ -67,8 +67,11 @@ if __name__ == "__main__":
     parser.add_argument('--reinit', type=int, default=1)
     parser.add_argument('--project_name', type=str, default="CELL_dummy")
     parser.add_argument('--run_note', type=str, default="")
-    parser.add_argument('--POLL', type=int, default=1)
+    parser.add_argument('--POLL', type=int, default=0)
     parser.add_argument('--no_prune', type=int, default=0)
+    parser.add_argument('--stand_alone', type=int, default=0)
+    parser.add_argument('--stand_alone_prune', type=int, default=0)
+
     parser.add_argument('--noise_variance', type=int, default=1, help="noise variance level of the injected Gaussian Noise")
     parser.add_argument('--n_malicious', type=int, default=0, help="number of malicious nodes in the network")
 
@@ -97,6 +100,10 @@ if __name__ == "__main__":
         run_name = "POLL" 
     elif args.no_prune:
         run_name = "NOPRUNE" 
+    elif args.stand_alone:
+        run_name = "STANDALONE"
+    elif args.stand_alone_prune:
+        run_name = "STANDALONE_PRUNE" 
     else:
         run_name = "CELL"
     

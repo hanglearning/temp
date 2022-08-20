@@ -56,6 +56,56 @@ class Client():
                     weight_params.add_(noise.to(self.args.device))
         print(f"Device {self.idx} has poisoned its model.")
 
+    def update_standalone(self) -> None:
+
+        self.model = self.global_model
+
+        for i in range(self.args.rounds):
+            
+            print("\nRound", self.elapsed_comm_rounds + 1)
+            
+            self.train(self.elapsed_comm_rounds)
+            print(f"\n{self.idx} Evaluating Trained Model")
+            metrics = self.eval(self.model)
+            print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
+
+            wandb.log({f"{self.idx}_acc": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
+
+            self.elapsed_comm_rounds += 1
+
+    def update_standalone_prune(self) -> None:
+
+        self.model = self.global_model
+
+        for i in range(self.args.rounds):
+
+            start_diff = 0
+            curr_diff = round(min(self.args.prune_threshold, start_diff + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
+            
+            print("\nRound", self.elapsed_comm_rounds + 1)
+
+            l1_prune(model=self.model,
+                    amount=curr_diff,
+                    name='weight',
+                    verbose=self.args.prune_verbose)
+
+            print(f"{self.idx} pruned {curr_diff} in round {self.elapsed_comm_rounds + 1}.")
+
+            prune_rate = get_prune_summary(model=self.model,name='weight')['global']
+            print(f"Sparcity {1 - get_prune_summary(model=self.model,name='weight')['global']}")
+
+            self.train(self.elapsed_comm_rounds)
+
+            print(f"\n{self.idx} Evaluating Trained Model")
+            metrics = self.eval(self.model)
+            print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
+
+            wandb.log({f"{self.idx}_acc": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
+            wandb.log(
+            {f"{self.idx}_percent_pruned": prune_rate})
+
+            self.elapsed_comm_rounds += 1
+
     def update(self) -> None:
         """
             Interface to Server
@@ -158,12 +208,16 @@ class Client():
         self.train(self.elapsed_comm_rounds)
 
         if self.args.POLL and self.is_malicious:
+            print(f"\nBefore poisoning model, evaluating Trained Model")
+            metrics = self.eval(self.model)
+            print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
             self.poison_model()
 
         print(f"\nEvaluating Trained Model")
         metrics = self.eval(self.model)
         print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
 
+        wandb.log({f"comm_round": self.elapsed_comm_rounds + 1})
         wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate})
         wandb.log({f"{self.idx}_eita": self.eita})
         wandb.log(
