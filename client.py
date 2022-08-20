@@ -18,6 +18,7 @@ class Client():
         self,
         idx,
         args,
+        is_malicious,
         train_loader=None,
         test_loader=None,
         global_test_loader=None,
@@ -25,6 +26,7 @@ class Client():
     ):
         self.idx = idx
         self.args = args
+        self.is_malicious = is_malicious
         self.test_loader = test_loader
         self.train_loader = train_loader
         self.global_test_loader = global_test_loader
@@ -45,6 +47,15 @@ class Client():
         self.global_model = None
         self.global_init_model = None
 
+    def poison_model(self):
+        for layer, module in self.model.named_children():
+            for name, weight_params in module.named_parameters():
+                if "weight" in name:
+                    noise = self.args.noise_variance * torch.randn(weight_params.size())
+                    # variance_of_noise = torch.var(noise)
+                    weight_params.add_(noise.to(self.args.device))
+        print(f"Device {self.idx} has poisoned its model.")
+
     def update(self) -> None:
         """
             Interface to Server
@@ -60,7 +71,7 @@ class Client():
                                        name='weight')['global']
         print('Global model prune percentage: {}'.format(prune_rate))
 
-        if self.args.HANG:
+        if self.args.POLL:
                     
             start_diff = 0
             curr_diff = round(min(self.args.prune_threshold, start_diff + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
@@ -145,6 +156,9 @@ class Client():
 
         print(f"\nTraining local model")
         self.train(self.elapsed_comm_rounds)
+
+        if self.args.POLL and self.is_malicious:
+            self.poison_model()
 
         print(f"\nEvaluating Trained Model")
         metrics = self.eval(self.model)

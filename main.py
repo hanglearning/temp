@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_mode', type=str,
                         default='non-iid', help='non-iid|iid')
     parser.add_argument('--rate_unbalance', type=float, default=1.0)
-    parser.add_argument('--num_clients', type=int, default=20)
+    parser.add_argument('--num_clients', type=int, default=12)
     parser.add_argument('--rounds', type=int, default=40)
     parser.add_argument('--prune_step', type=float, default=0.2)
     parser.add_argument('--prune_threshold', type=float, default=0.8)
@@ -62,13 +62,15 @@ if __name__ == "__main__":
     parser.add_argument('--fast_dev_run', type=bool, default=False)
     parser.add_argument('--num_workers', type=int, default=0)
     
-    parser.add_argument('--diff_freq', type=int, default=5)
+    parser.add_argument('--diff_freq', type=int, default=2)
     parser.add_argument('--rewind', type=int, default=0)
     parser.add_argument('--reinit', type=int, default=1)
     parser.add_argument('--project_name', type=str, default="CELL_dummy")
     parser.add_argument('--run_note', type=str, default="")
-    parser.add_argument('--HANG', type=int, default=1)
+    parser.add_argument('--POLL', type=int, default=1)
     parser.add_argument('--no_prune', type=int, default=0)
+    parser.add_argument('--noise_variance', type=int, default=1, help="noise variance level of the injected Gaussian Noise")
+    parser.add_argument('--n_malicious', type=int, default=0, help="number of malicious nodes in the network")
 
     args = parser.parse_args()
 
@@ -87,11 +89,12 @@ if __name__ == "__main__":
                                               num_workers=args.num_workers)
     clients = []
     for i in range(args.num_clients):
-        client = Client(i, args, train_loaders[i], test_loaders[i], global_test_loader)
+        malicious = True if i < args.n_malicious else False
+        client = Client(i, args, malicious, train_loaders[i], test_loaders[i], global_test_loader)
         clients.append(client)
 
-    if args.HANG:
-        run_name = "HANG" 
+    if args.POLL:
+        run_name = "POLL" 
     elif args.no_prune:
         run_name = "NOPRUNE" 
     else:
@@ -99,7 +102,7 @@ if __name__ == "__main__":
     
     wandb.login()
     wandb.init(project=args.project_name, entity="hangchen")
-    wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_seed_{args.seed}_{args.run_note}_%m%d%Y_%H%M%S")
+    wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_mali_{args.n_malicious}_seed_{args.seed}_{args.run_note}_%m%d%Y_%H%M%S")
     wandb.config.update(args)
 
     server = Server(args, model, clients)
