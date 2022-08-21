@@ -81,7 +81,8 @@ def train(
     verbose=True
 ) -> Dict[str, torch.Tensor]:
 
-    optimizer = torch.optim.Adam(lr=lr, params=model.parameters())
+    # optimizer = torch.optim.Adam(lr=lr, params=model.parameters())
+    optimizer = torch.optim.SGD(lr=lr, params=model.parameters())
     loss_fn = nn.CrossEntropyLoss()
     num_batch = len(train_dataloader)
     global metrics
