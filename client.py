@@ -247,6 +247,7 @@ class Client():
 
             metrics = util_train(self.model,
                                  self.train_loader,
+                                 self.args.optimizer,
                                  self.args.lr,
                                  self.args.device,
                                  self.args.fast_dev_run,

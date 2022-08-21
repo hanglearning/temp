@@ -75,14 +75,17 @@ metrics = MetricCollection([
 def train(
     model: nn.Module,
     train_dataloader: DataLoader,
+    optimizer_type: str,
     lr: float = 1e-3,
     device: str = 'cuda:0',
     fast_dev_run=False,
     verbose=True
 ) -> Dict[str, torch.Tensor]:
 
-    # optimizer = torch.optim.Adam(lr=lr, params=model.parameters())
-    optimizer = torch.optim.SGD(lr=lr, params=model.parameters())
+    if optimizer_type == "Adam":
+        optimizer = torch.optim.Adam(lr=lr, params=model.parameters())
+    elif optimizer_type == "SGD":
+        optimizer = torch.optim.SGD(lr=lr, params=model.parameters())
     loss_fn = nn.CrossEntropyLoss()
     num_batch = len(train_dataloader)
     global metrics

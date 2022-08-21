@@ -54,7 +54,7 @@ def mnist_extr_noniid(train_dataset, test_dataset, num_users, n_class, num_sampl
     idx_shards = np.split(idx_shard, 10)
     for i in range(num_users):
         user_labels = np.array([])
-        temp_set = set(np.random.choice(10, n_class, replace=False))
+        temp_set = list(set(np.random.choice(10, n_class, replace=False)))
         rand_set = []
         for j in temp_set:
             choice = np.random.choice(idx_shards[j], 1)[0]
@@ -62,18 +62,22 @@ def mnist_extr_noniid(train_dataset, test_dataset, num_users, n_class, num_sampl
             idx_shards[j] = np.delete(
                 idx_shards[j], np.where(idx_shards[j] == choice))
         unbalance_flag = 0
-        for rand in rand_set:
+        for rand_iter in range(len(rand_set)):
+            rand = rand_set[rand_iter]
             if unbalance_flag == 0:
                 dict_users_train[i] = np.concatenate(
                     (dict_users_train[i], idxs[rand*num_imgs_train:(rand+1)*num_imgs_train]), axis=0)
+                print(f"user {i} assigned label {temp_set[rand_iter]} with quantity",len(idxs[rand*num_imgs_train:(rand+1)*num_imgs_train]))
                 user_labels = np.concatenate(
                     (user_labels, labels[rand*num_imgs_train:(rand+1)*num_imgs_train]), axis=0)
             else:
                 dict_users_train[i] = np.concatenate(
                     (dict_users_train[i], idxs[rand*num_imgs_train:int((rand+rate_unbalance)*num_imgs_train)]), axis=0)
+                print(f"user {i} assigned label {temp_set[rand_iter]} with quantity",len(idxs[rand*num_imgs_train:int((rand+rate_unbalance)*num_imgs_train)]))
                 user_labels = np.concatenate(
                     (user_labels, labels[rand*num_imgs_train:int((rand+rate_unbalance)*num_imgs_train)]), axis=0)
             unbalance_flag = 1
+            
         user_labels_set = set(user_labels)
 
         for label in user_labels_set:
