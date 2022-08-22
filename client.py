@@ -12,6 +12,8 @@ from torch.nn.utils import prune
 from util import *
 from util import train as util_train
 from util import test as util_test
+import time
+
 
 class Client():
     def __init__(
@@ -217,7 +219,13 @@ class Client():
                 self.model = self.global_model
 
         print(f"\nTraining local model")
+
+        start_time = time.time()
         self.train(self.elapsed_comm_rounds)
+        training_time = round(time.time() - start_time, 4)
+        print(f"Training time {training_time}s")
+        wandb.log({f"comm_round": self.elapsed_comm_rounds + 1})
+        wandb.log({f"{self.idx}_training_time": training_time})
 
         if self.args.POLL and self.is_malicious:
             print(f"\nBefore poisoning model, evaluating Trained Model")
@@ -229,7 +237,7 @@ class Client():
         metrics = self.eval(self.model)
         print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
 
-        wandb.log({f"comm_round": self.elapsed_comm_rounds + 1})
+        
         wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate})
         wandb.log({f"{self.idx}_eita": self.eita})
         wandb.log(
