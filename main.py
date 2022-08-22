@@ -62,6 +62,7 @@ if __name__ == "__main__":
     parser.add_argument('--fast_dev_run', type=bool, default=False)
     parser.add_argument('--num_workers', type=int, default=0)
     
+    parser.add_argument('--start_diff', type=int, default=0)
     parser.add_argument('--optimizer', type=str, default="SGD", help="SGD|Adam")
     parser.add_argument('--diff_freq', type=int, default=2)
     parser.add_argument('--rewind', type=int, default=0)

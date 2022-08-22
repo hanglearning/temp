@@ -37,6 +37,7 @@ class Client():
         self.num_data = len(self.train_loader)
 
         self.elapsed_comm_rounds = 0
+        self.last_prune_diff = args.start_diff
 
         self.accuracies = []
         self.losses = []
@@ -131,8 +132,12 @@ class Client():
 
         if self.args.POLL:
                     
-            start_diff = 0
-            curr_diff = round(min(self.args.prune_threshold, start_diff + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
+            curr_diff = round(min(self.args.prune_threshold, self.args.start_diff + ((self.elapsed_comm_rounds + 1) // self.args.diff_freq) * self.args.prune_step), 2)
+
+            reinit = False
+            if curr_diff > self.last_prune_diff:
+                reinit = True
+                self.last_prune_diff = curr_diff
             
             params_pruned = get_prune_params(self.global_model, name='weight')
             for param, name in params_pruned:
@@ -145,16 +150,15 @@ class Client():
             print(f"{self.idx} pruned {curr_diff} in round {self.elapsed_comm_rounds + 1}.")
             
             prune_rate = get_prune_summary(model=self.global_model,name='weight')['global']
-            print(f"Sparcity {1 - get_prune_summary(model=self.global_model,name='weight')['global']}")
+            print(f"Sparcity {round(1 - get_prune_summary(model=self.global_model,name='weight')['global'], 2)}")
 
             # how about do not reinit
-            if self.args.reinit:
-                if self.elapsed_comm_rounds > 0 and self.elapsed_comm_rounds % self.args.diff_freq == 0 and self.elapsed_comm_rounds < self.args.diff_freq * int(self.args.prune_threshold/self.args.prune_step):
-                    # reinitialize model with init_params
-                    source_params = dict(self.global_init_model.named_parameters())
-                    for name, param in self.global_model.named_parameters():
-                        param.data.copy_(source_params[name].data)
-                    print(f"{self.idx} reinited in round {self.elapsed_comm_rounds + 1}.")
+            if self.args.reinit and reinit:
+                # reinitialize model with init_params
+                source_params = dict(self.global_init_model.named_parameters())
+                for name, param in self.global_model.named_parameters():
+                    param.data.copy_(source_params[name].data)
+                print(f"{self.idx} reinited in round {self.elapsed_comm_rounds + 1}.")
 
             self.prune_rates.append(prune_rate)
             self.model = self.global_model
