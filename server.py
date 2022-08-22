@@ -10,6 +10,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.nn import Module
 from util import get_prune_params, super_prune, fed_avg, l1_prune, create_model, copy_model, get_prune_summary
+from util import test_by_data_set
+
 
 
 class Server():
@@ -21,7 +23,8 @@ class Server():
         self,
         args,
         model,
-        clients
+        clients,
+        global_test_loader
     ):
         super().__init__()
         self.clients = clients
@@ -29,6 +32,8 @@ class Server():
         self.args = args
         self.model = model
         self.init_model = copy_model(model, self.args.device)
+
+        self.global_test_loader = global_test_loader
 
         self.elapsed_comm_rounds = 0
         self.curr_prune_step = 0.00
@@ -119,8 +124,18 @@ class Server():
         print('-----------------------------', flush=True)
         wandb.log({"client_avg_acc": avg_accuracy, "comm_round": self.elapsed_comm_rounds})
 
+        # average accuracy is the accuracy AFTER training, that's okay, because it's the ticket model
+
         # compute average-model
         aggr_model = self.aggr(models, clients)
+
+        # test on global test set
+        aggr_model_acc = test_by_data_set(aggr_model,
+                               self.global_test_loader,
+                               self.args.device,
+                               self.args.test_verbose)['Accuracy'][0]
+        print(f'global test set accuracy: {aggr_model_acc}')
+        wandb.log({f"comm_round": self.elapsed_comm_rounds + 1, "global_test_acc": aggr_model_acc})
 
         # copy aggregated-model's params to self.model (keep buffer same)
         source_params = dict(aggr_model.named_parameters())

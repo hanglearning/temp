@@ -114,7 +114,7 @@ if __name__ == "__main__":
     wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_mali_{args.n_malicious}_optim_{args.optimizer}_seed_{args.seed}_{args.run_note}_%m%d%Y_%H%M%S")
     wandb.config.update(args)
 
-    server = Server(args, model, clients)
+    server = Server(args, model, clients, global_test_loader)
 
     for i in range(args.rounds):
         server.update()

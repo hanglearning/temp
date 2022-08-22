@@ -510,3 +510,39 @@ def super_prune(
             customPrune(param, sliced_params, amount, name)
         else:
             customPrune(param, orig_params, amount, name)
+
+def test_by_data_set(
+    model: nn.Module,
+    data_loader: DataLoader,
+    device='cuda:0',
+    verbose=True
+) -> Dict[str, torch.Tensor]:
+
+    num_batch = len(data_loader)
+    model.eval()
+    global metrics
+
+    metrics = metrics.to(device)
+    progress_bar = tqdm(enumerate(data_loader),
+                        total=num_batch,
+                        file=sys.stdout,
+                        disable=not verbose)
+    for batch_idx, batch in progress_bar:
+        x, y = batch
+        x = x.to(device)
+        y = y.to(device)
+        y_hat = model(x)
+
+        output = metrics(y_hat, y)
+
+        progress_bar.set_postfix({'acc': output['Accuracy'].item()})
+
+
+    outputs = metrics.compute()
+    metrics.reset()
+    model.train(True)
+    outputs = {k: [v.item()] for k, v in outputs.items()}
+
+    if verbose:
+        print(tabulate(outputs, headers='keys', tablefmt='github'))
+    return outputs
