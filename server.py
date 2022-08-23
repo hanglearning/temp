@@ -135,7 +135,7 @@ class Server():
                                self.args.device,
                                self.args.test_verbose)['Accuracy'][0]
         print(f'global test set accuracy: {aggr_model_acc}')
-        wandb.log({f"comm_round": self.elapsed_comm_rounds + 1, "global_test_acc": aggr_model_acc})
+        wandb.log({f"comm_round": self.elapsed_comm_rounds, "global_test_acc": aggr_model_acc})
 
         # copy aggregated-model's params to self.model (keep buffer same)
         source_params = dict(aggr_model.named_parameters())
