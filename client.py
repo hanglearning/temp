@@ -170,7 +170,7 @@ class Client():
             self.model = self.global_model
 
             # in this mode, also need to test for global model on individual test set
-            if not self.elapsed_comm_rounds: # skip initial model
+            if self.elapsed_comm_rounds: # skip initial model
                 print(f"\nEvaluating the latest global model on local test set")
                 acc = self.eval(self.model)["Accuracy"][0]
                 print(f'Global model on local test set accuracy: {acc}')
