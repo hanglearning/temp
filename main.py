@@ -116,6 +116,9 @@ if __name__ == "__main__":
 
     server = Server(args, model, clients, global_test_loader)
 
+    if args.no_prune:
+        args.rounds += 1
+
     for i in range(args.rounds):
         server.update()
 

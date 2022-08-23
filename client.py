@@ -169,6 +169,13 @@ class Client():
             self.prune_rates.append(1.0)
             self.model = self.global_model
 
+            # in this mode, also need to test for global model on individual test set
+            if not self.elapsed_comm_rounds: # skip initial model
+                print(f"\nEvaluating the latest global model on local test set")
+                acc = self.eval(self.model)["Accuracy"][0]
+                print(f'Global model on local test set accuracy: {acc}')
+                wandb.log({"comm_round": self.elapsed_comm_rounds, "global_model_local_set_acc": acc})
+
         else:
 
             if self.cur_prune_rate < self.args.prune_threshold:
@@ -233,9 +240,11 @@ class Client():
             print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
             self.poison_model()
 
-        print(f"\nEvaluating Trained Model")
-        metrics = self.eval(self.model)
-        print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
+        if not self.args.no_prune:
+            # when no_prune mode (pure FedAvg), test global model above
+            print(f"\nEvaluating Trained Model")
+            metrics = self.eval(self.model)
+            print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
 
         
         wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate})
