@@ -232,8 +232,7 @@ class Client():
         self.train(self.elapsed_comm_rounds)
         training_time = round(time.time() - start_time, 4)
         print(f"Training time {training_time}s")
-        wandb.log({f"comm_round": self.elapsed_comm_rounds + 1})
-        wandb.log({f"{self.idx}_training_time": training_time})
+        # wandb.log({f"{self.idx}_training_time": training_time, "comm_round": self.elapsed_comm_rounds + 1})
 
         if self.args.POLL and self.is_malicious:
             print(f"\nBefore poisoning model, evaluating Trained Model")
@@ -246,6 +245,7 @@ class Client():
             print(f"\nEvaluating Trained Model")
             metrics = self.eval(self.model)
             print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
+            wandb.log({f"{self.idx}_Accuracy": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
 
         
         wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate})
@@ -253,11 +253,11 @@ class Client():
         wandb.log(
             {f"{self.idx}_percent_pruned": self.prune_rates[-1]})
 
-        for key, thing in metrics.items():
-            if(isinstance(thing, list)):
-                wandb.log({f"{self.idx}_{key}": thing[0]})
-            else:
-                wandb.log({f"{self.idx}_{key}": thing})
+        # for key, thing in metrics.items():
+        #     if(isinstance(thing, list)):
+        #         wandb.log({f"{self.idx}_{key}": thing[0]})
+        #     else:
+        #         wandb.log({f"{self.idx}_{key}": thing})
 
         if (self.elapsed_comm_rounds+1) % self.args.save_freq == 0:
             self.save(self.model)
