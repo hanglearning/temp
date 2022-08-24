@@ -170,12 +170,12 @@ class Client():
             self.model = self.global_model
 
             # in this mode, also need to test for global model on individual test set
-            # to justify ticket model's necessaity - like, although FedAvg global model works badly for the entire test set, but if the global model works good for individual test set, why use LotteryFL or CELL for personalized learning? Or, yea, pruning is a benefit, but the accuracy benefit cannot be claimed
+            # to justify ticket model's motivation, LotteryFL in particular - like, although FedAvg global model works badly for the entire test set, but if the global model works good for individual test set, why use LotteryFL or CELL for personalized learning? Or, yea, pruning is a benefit, but the accuracy benefit cannot be claimed
             if self.elapsed_comm_rounds: # skip initial model
                 print(f"\nEvaluating the latest global model on local test set")
                 acc = self.eval(self.model)["Accuracy"][0]
                 print(f'Global model on local test set accuracy: {acc}')
-                wandb.log({"comm_round": self.elapsed_comm_rounds, "global_model_local_set_acc": acc})
+                wandb.log({"comm_round": self.elapsed_comm_rounds, f"{self.idx}_global_model_local_set_acc": acc})
 
         else:
 
