@@ -122,7 +122,11 @@ class Server():
         print('-----------------------------', flush=True)
         print(f'| Average Accuracy: {avg_accuracy}  | ', flush=True)
         print('-----------------------------', flush=True)
-        wandb.log({"client_avg_acc": avg_accuracy, "comm_round": self.elapsed_comm_rounds})
+        if self.args.no_prune:
+            # notice that if args.no_prune, this returns the average global test accuracy on local test sets
+            wandb.log({"client_fedavg_global_test_acc": avg_accuracy, "comm_round": self.elapsed_comm_rounds - 1})
+        if not self.args.no_prune: # CELL and POLL
+            wandb.log({"client_avg_acc": avg_accuracy, "comm_round": self.elapsed_comm_rounds})
 
         # average accuracy is the accuracy AFTER training, that's okay, because it's the ticket model
 

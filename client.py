@@ -45,6 +45,7 @@ class Client():
         self.losses = []
         self.prune_rates = []
         self.cur_prune_rate = 0.00
+        self.global_noprune_local_accuracies = []
 
         self.model = None
         self.global_model = None
@@ -176,7 +177,7 @@ class Client():
                 acc = self.eval(self.model)["Accuracy"][0]
                 print(f'Global model on local test set accuracy: {acc}')
                 wandb.log({"comm_round": self.elapsed_comm_rounds, f"{self.idx}_global_model_local_set_acc": acc})
-
+                self.global_noprune_local_accuracies.append(acc)
         else:
 
             if self.cur_prune_rate < self.args.prune_threshold:
@@ -334,7 +335,14 @@ class Client():
         params_pruned = get_prune_params(upload_model, name='weight')
         for param, name in params_pruned:
             prune.remove(param, name)
-        return {
-            'model': upload_model,
-            'acc': self.accuracies[-1]
-        }
+        if self.args.no_prune:
+            acc = self.global_noprune_local_accuracies[-1] if self.elapsed_comm_rounds > 1 else 0
+            return {
+                'model': upload_model,
+                'acc': acc
+            }
+        if not self.args.no_prune:
+            return {
+                'model': upload_model,
+                'acc': self.accuracies[-1]
+            }
