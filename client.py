@@ -114,7 +114,7 @@ class Client():
 
             wandb.log({f"{self.idx}_acc": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
             wandb.log(
-            {f"{self.idx}_percent_pruned": prune_rate})
+            {f"{self.idx}_percent_pruned": prune_rate, "comm_round": self.elapsed_comm_rounds + 1})
 
             self.elapsed_comm_rounds += 1
 
@@ -249,10 +249,10 @@ class Client():
             wandb.log({f"{self.idx}_Accuracy": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
 
         
-        wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate})
+        wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate, "comm_round": self.elapsed_comm_rounds + 1})
         wandb.log({f"{self.idx}_eita": self.eita})
         wandb.log(
-            {f"{self.idx}_percent_pruned": self.prune_rates[-1]})
+            {f"{self.idx}_percent_pruned": self.prune_rates[-1], "comm_round": self.elapsed_comm_rounds + 1})
 
         # for key, thing in metrics.items():
         #     if(isinstance(thing, list)):
