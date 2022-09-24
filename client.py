@@ -83,8 +83,7 @@ class Client():
 
         for i in range(self.args.rounds):
 
-            start_diff = 0
-            curr_diff = round(min(self.args.prune_threshold, start_diff + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
+            curr_diff = round(min(self.args.prune_threshold, self.args.start_diff + (self.elapsed_comm_rounds // self.args.diff_freq) * self.args.prune_step), 2)
             
             print("\nRound", self.elapsed_comm_rounds + 1)
 
@@ -112,11 +111,18 @@ class Client():
             metrics = self.eval(self.model)
             print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
 
+            # remove, or next round it will prune the amount on top of unpruned percentage
+            params_pruned = get_prune_params(self.global_model, name='weight')
+            for param, name in params_pruned:
+                prune.remove(param, name)
+
             wandb.log({f"{self.idx}_acc": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
             wandb.log(
             {f"{self.idx}_percent_pruned": prune_rate, "comm_round": self.elapsed_comm_rounds + 1})
 
             self.elapsed_comm_rounds += 1
+
+
 
     def update(self) -> None:
         """

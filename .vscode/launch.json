@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--diff_freq", "2", "--project_name", "CELL_Dummy", "--num_clients", "2", "--no_prune", "0", "--n_samples", "20", "--seed", "60", "--epochs", "5", "--batch_size", "10", "--lr", "0.01", "--dataset", "mnist", "--n_malicious", "0", "--rounds", "3", "--rate_unbalance", "0.25", "--optimizer", "Adam", "--n_class", "2"]
+            "args": ["--diff_freq", "2", "--project_name", "CELL_Dummy", "--num_clients", "3", "--stand_alone_prune", "1", "--n_samples", "20", "--seed", "60", "--epochs", "5", "--batch_size", "10", "--lr", "0.01", "--dataset", "mnist", "--n_malicious", "0", "--rounds", "20", "--rate_unbalance", "0.5", "--optimizer", "Adam", "--n_class", "3"]
         }
     ]
 }
