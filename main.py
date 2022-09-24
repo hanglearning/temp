@@ -99,13 +99,13 @@ if __name__ == "__main__":
         clients.append(client)
 
     if args.POLL:
-        run_name = "POLL" 
+        run_name = "POLL" # synchronous pruninng
     elif args.no_prune:
-        run_name = "NOPRUNE" 
+        run_name = "NOPRUNE" # Pure FedAvg
     elif args.stand_alone:
-        run_name = "STANDALONE"
+        run_name = "STANDALONE" # Pure Centralized
     elif args.stand_alone_prune:
-        run_name = "STANDALONE_PRUNE" 
+        run_name = "STANDALONE_PRUNE" # Centeralized with PoLL style pruninng
     else:
         run_name = "CELL"
     
