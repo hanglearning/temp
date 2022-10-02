@@ -63,7 +63,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_workers', type=int, default=0)
     
     parser.add_argument('--start_diff', type=int, default=0)
-    parser.add_argument('--optimizer', type=str, default="SGD", help="SGD|Adam")
+    parser.add_argument('--optimizer', type=str, default="Adam", help="SGD|Adam")
     parser.add_argument('--diff_freq', type=int, default=2)
     parser.add_argument('--rewind', type=int, default=0)
     parser.add_argument('--reinit', type=int, default=1)
@@ -93,10 +93,12 @@ if __name__ == "__main__":
                                               rate_unbalance=args.rate_unbalance,
                                               num_workers=args.num_workers)
     clients = []
+    n_malicious = args.n_malicious
     for i in range(args.num_clients):
-        malicious = True if i < args.n_malicious else False
+        malicious = True if i < n_malicious else False
         client = Client(i, args, malicious, train_loaders[i], test_loaders[i], global_test_loader)
         clients.append(client)
+        n_malicious -= 1
 
     if args.POLL:
         run_name = "POLL" # synchronous pruninng
