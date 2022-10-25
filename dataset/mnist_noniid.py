@@ -52,6 +52,7 @@ def mnist_extr_noniid(train_dataset, test_dataset, num_users, n_class, num_sampl
         idxs_test_splits[labels_test[i]].append(idxs_test[i])
 
     idx_shards = np.split(idx_shard, 10)
+
     for i in range(num_users):
         user_labels = np.array([])
         temp_set = list(set(np.random.choice(10, n_class, replace=False)))
