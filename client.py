@@ -141,7 +141,7 @@ class Client():
 
         if self.args.POLL:
                     
-            curr_diff = round(min(self.args.prune_threshold, self.args.start_diff + ((self.elapsed_comm_rounds + 1) // self.args.diff_freq) * self.args.prune_step), 2)
+            curr_diff = round(min(self.args.prune_threshold, self.args.start_diff + ((self.elapsed_comm_rounds // self.args.diff_freq * self.args.prune_step))), 1)
 
             reinit = False
             if curr_diff > self.last_prune_diff:

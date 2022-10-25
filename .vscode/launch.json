@@ -11,7 +11,8 @@
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--diff_freq", "2", "--project_name", "CELL_Dummy", "--num_clients", "6", "--n_samples", "20", "--seed", "60", "--epochs", "5", "--batch_size", "10", "--lr", "0.01", "--dataset", "mnist", "--n_malicious", "3", "--rounds", "20", "--rate_unbalance", "0.5", "--optimizer", "Adam", "--n_class", "3", "--dataset", "cifar10", "--POLL", "1"]
+            "args": ["--project_name", "CELL_Dummy", "--POLL", "1", "--num_clients", "12", "--n_malicious", "0", "--seed", "40"]
+            // "args": ["--diff_freq", "2", "--project_name", "CELL_Dummy", "--num_clients", "6", "--n_samples", "20", "--seed", "60", "--epochs", "5", "--batch_size", "10", "--lr", "0.01", "--dataset", "mnist", "--n_malicious", "3", "--rounds", "20", "--rate_unbalance", "0.5", "--optimizer", "Adam", "--n_class", "3", "--dataset", "cifar10", "--POLL", "1"]
         }
     ]
 }
