@@ -81,6 +81,9 @@ if __name__ == "__main__":
 
     seed_everything(seed=args.seed, workers=True)
 
+    args.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    print(f"Using device {args.device}")
+
     model = create_model(cls=models[args.dataset]
                          [args.arch], device=args.device)
     
