@@ -98,8 +98,8 @@ if __name__ == "__main__":
     clients = []
     n_malicious = args.n_malicious
     for i in range(args.num_clients):
-        malicious = True if i < n_malicious else False
-        client = Client(i, args, malicious, train_loaders[i], test_loaders[i], global_test_loader)
+        malicious = True if args.num_clients - i <= n_malicious else False
+        client = Client(i + 1, args, malicious, train_loaders[i], test_loaders[i], global_test_loader)
         clients.append(client)
 
     if args.POLL:
