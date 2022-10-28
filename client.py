@@ -241,7 +241,7 @@ class Client():
         print(f"Training time {training_time}s")
         # wandb.log({f"{self.idx}_training_time": training_time, "comm_round": self.elapsed_comm_rounds + 1})
 
-        if self.args.POLL and self.is_malicious:
+        if (self.args.POLL or self.args.no_prune) and self.is_malicious:
             print(f"\nBefore poisoning model, evaluating Trained Model")
             metrics = self.eval(self.model)
             print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
