@@ -246,6 +246,9 @@ class Client():
             metrics = self.eval(self.model)
             print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
             self.poison_model()
+            
+            metrics = self.eval(self.model)
+            print(f'After poisoning, model accuracy: {metrics["Accuracy"][0]}')
 
         if not self.args.no_prune:
             # when no_prune mode (pure FedAvg), test global model above
