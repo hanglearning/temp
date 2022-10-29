@@ -91,6 +91,7 @@ if __name__ == "__main__":
 
     exe_date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
     log_dirpath = f"{args.logs_base_folder}/POLL_BASE/{exe_date_time}"
+    os.makedirs(log_dirpath)
 
     train_loaders, test_loaders, global_test_loader = DataLoaders(num_users=args.num_clients,
                                               dataset_name=args.dataset,
