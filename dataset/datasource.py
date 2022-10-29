@@ -11,22 +11,26 @@ from dataset.mnist_noniid import get_dataset_mnist_extr_noniid, mnist_extr_nonii
 # gets whatever is left after other users had their shares
 
 
-def DataLoaders(num_users, dataset_name, n_class, nsamples, mode="non-iid", batch_size=32, rate_unbalance=1.0, num_workers=1):
+def DataLoaders(num_users, dataset_name, n_class, nsamples, log_dirpath, mode="non-iid", batch_size=32, rate_unbalance=1.0, num_workers=1):
     if mode == "non-iid":
         if dataset_name == "mnist":
             return get_data_noniid_mnist(num_users,
                                          n_class,
                                          nsamples,
+                                         log_dirpath,
                                          batch_size,
                                          rate_unbalance,
-                                         num_workers)
+                                         num_workers
+                                         )
         elif dataset_name == "cifar10":
             return get_data_noniid_cifar10(num_users,
                                            n_class,
                                            nsamples,
+                                           log_dirpath,
                                            batch_size,
                                            rate_unbalance,
-                                           num_workers)
+                                           num_workers
+                                           )
     elif mode == 'iid':
         if dataset_name == 'cifar10':
             data_dir = './data'
@@ -80,11 +84,11 @@ def iid_split(num_clients,
     return user_train_loaders, user_test_loaders
 
 
-def get_data_noniid_cifar10(num_users, n_class, nsamples, batch_size=32, rate_unbalance=1.0, num_workers=1):
+def get_data_noniid_cifar10(num_users, n_class, nsamples, log_dirpath, batch_size=32, rate_unbalance=1.0, num_workers=1):
 
     train_data, test_data = [], []
     train_data, test_data, user_train, user_test = get_dataset_cifar10_extr_noniid(
-        num_users, n_class, nsamples, rate_unbalance)
+        num_users, n_class, nsamples, rate_unbalance, log_dirpath)
 
     train_loaders = []
     test_loaders = []
@@ -117,11 +121,11 @@ def get_data_noniid_cifar10(num_users, n_class, nsamples, batch_size=32, rate_un
     return train_loaders, test_loaders, global_test_loader
 
 
-def get_data_noniid_mnist(num_users, n_class, nsamples, batch_size=32, rate_unbalance=1.0, num_workers=1):
+def get_data_noniid_mnist(num_users, n_class, nsamples, log_dirpath, batch_size=32, rate_unbalance=1.0, num_workers=1):
 
     train_data, test_data = [], []
     train_data, test_data, user_train, user_test = get_dataset_mnist_extr_noniid(
-        num_users, n_class, nsamples, rate_unbalance)
+        num_users, n_class, nsamples, rate_unbalance, log_dirpath)
 
     train_loaders = []
     test_loaders = []

@@ -77,6 +77,8 @@ if __name__ == "__main__":
     parser.add_argument('--noise_variance', type=int, default=1, help="noise variance level of the injected Gaussian Noise")
     parser.add_argument('--n_malicious', type=int, default=0, help="number of malicious nodes in the network")
 
+    parser.add_argument('-lb', '--logs_base_folder', type=str, default="/content/drive/MyDrive/POLL", help='base folder dir to store running logs')
+
     args = parser.parse_args()
 
     seed_everything(seed=args.seed, workers=True)
@@ -86,15 +88,20 @@ if __name__ == "__main__":
 
     model = create_model(cls=models[args.dataset]
                          [args.arch], device=args.device)
-    
+
+    exe_date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
+    log_dirpath = f"{args.logs_base_folder}/POLL_BASE/{exe_date_time}"
+
     train_loaders, test_loaders, global_test_loader = DataLoaders(num_users=args.num_clients,
                                               dataset_name=args.dataset,
                                               n_class=args.n_class,
                                               nsamples=args.n_samples,
+                                              log_dirpath=log_dirpath,
                                               mode=args.dataset_mode,
                                               batch_size=args.batch_size,
                                               rate_unbalance=args.rate_unbalance,
-                                              num_workers=args.num_workers)
+                                              num_workers=args.num_workers
+                                              )
     clients = []
     n_malicious = args.n_malicious
     for i in range(args.num_clients):
@@ -115,7 +122,7 @@ if __name__ == "__main__":
     
     wandb.login()
     wandb.init(project=args.project_name, entity="hangchen")
-    wandb.run.name = datetime.now().strftime(f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_n_clients_{args.num_clients}_mali_{args.n_malicious}_optim_{args.optimizer}_seed_{args.seed}_{args.run_note}_%m%d%Y_%H%M%S")
+    wandb.run.name = f"{run_name}_samples_{args.n_samples}_freq_{args.diff_freq}_n_clients_{args.num_clients}_mali_{args.n_malicious}_optim_{args.optimizer}_seed_{args.seed}_{args.run_note}_{exe_date_time}"
     wandb.config.update(args)
 
     server = Server(args, model, clients, global_test_loader)
