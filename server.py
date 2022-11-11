@@ -134,7 +134,7 @@ class Server():
         aggr_model = self.aggr(models, clients)
 
         model_save_path = f"{self.args.log_dir}/models/globals"
-        torch.save(aggr_model, f"{model_save_path}/comm_{self.elapsed_comm_rounds}")
+        torch.save(aggr_model.state_dict(), f"{model_save_path}/comm_{self.elapsed_comm_rounds}")
 
         # test on global test set
         aggr_model_acc = test_by_data_set(aggr_model,

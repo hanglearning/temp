@@ -261,7 +261,7 @@ class Client():
 
         model_save_path = f"{self.args.log_dir}/models/client_{self.idx}"
         Path(model_save_path).mkdir(parents=True, exist_ok=True)
-        torch.save(self.model, f"{model_save_path}/comm_{self.elapsed_comm_rounds + 1}")
+        torch.save(self.model.state_dict(), f"{model_save_path}/comm_{self.elapsed_comm_rounds + 1}")
 
 
         wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate, "comm_round": self.elapsed_comm_rounds + 1})

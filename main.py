@@ -97,7 +97,7 @@ if __name__ == "__main__":
     args.log_dir = log_dirpath
     model_save_path = f"{args.log_dir}/models/globals"
     Path(model_save_path).mkdir(parents=True, exist_ok=True)
-    torch.save(model, f"{model_save_path}/comm_0")
+    torch.save(model.state_dict(), f"{model_save_path}/comm_0")
 
     train_loaders, test_loaders, global_test_loader = DataLoaders(num_users=args.num_clients,
                                               dataset_name=args.dataset,
