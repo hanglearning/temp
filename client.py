@@ -13,6 +13,7 @@ from util import *
 from util import train as util_train
 from util import test as util_test
 import time
+from pathlib import Path
 
 
 class Client():
@@ -232,6 +233,7 @@ class Client():
                 else:
                     self.prune_rates.append(self.cur_prune_rate)
                 self.model = self.global_model
+        
 
         print(f"\nTraining local model")
 
@@ -257,7 +259,11 @@ class Client():
             print(f'Trained model accuracy: {metrics["Accuracy"][0]}')
             wandb.log({f"{self.idx}_Accuracy": metrics["Accuracy"][0], "comm_round": self.elapsed_comm_rounds + 1})
 
-        
+        model_save_path = f"{self.args.log_dir}/models/client_{self.idx}"
+        Path(model_save_path).mkdir(parents=True, exist_ok=True)
+        torch.save(self.model, f"{model_save_path}/comm_{self.elapsed_comm_rounds + 1}")
+
+
         wandb.log({f"{self.idx}_cur_prune_rate": self.cur_prune_rate, "comm_round": self.elapsed_comm_rounds + 1})
         wandb.log({f"{self.idx}_eita": self.eita})
         wandb.log(

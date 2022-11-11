@@ -133,6 +133,9 @@ class Server():
         # compute average-model
         aggr_model = self.aggr(models, clients)
 
+        model_save_path = f"{self.args.log_dir}/models/globals"
+        torch.save(aggr_model, f"{model_save_path}/comm_{self.elapsed_comm_rounds}")
+
         # test on global test set
         aggr_model_acc = test_by_data_set(aggr_model,
                                self.global_test_loader,

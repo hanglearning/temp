@@ -14,6 +14,7 @@ from util import create_model
 import wandb
 from dataset.datasource import DataLoaders
 from torchmetrics import MetricCollection, Accuracy, Precision, Recall
+from pathlib import Path
 
 models = {
     'cifar10': {
@@ -88,6 +89,10 @@ if __name__ == "__main__":
 
     model = create_model(cls=models[args.dataset]
                          [args.arch], device=args.device)
+
+    model_save_path = f"{args.log_dir}/models/globals"
+    Path(model_save_path).mkdir(parents=True, exist_ok=True)
+    torch.save(model, f"{model_save_path}/comm_0")
 
     exe_date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
     log_dirpath = f"{args.logs_base_folder}/POLL_BASE/{exe_date_time}"
