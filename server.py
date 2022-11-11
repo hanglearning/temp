@@ -11,6 +11,7 @@ import torch.optim as optim
 from torch.nn import Module
 from util import get_prune_params, super_prune, fed_avg, l1_prune, create_model, copy_model, get_prune_summary
 from util import test_by_data_set
+from util import *
 
 
 
@@ -134,7 +135,9 @@ class Server():
         aggr_model = self.aggr(models, clients)
 
         model_save_path = f"{self.args.log_dir}/models/globals"
-        torch.save(aggr_model.state_dict(), f"{model_save_path}/comm_{self.elapsed_comm_rounds}")
+        trainable_model_weights = get_trainable_model_weights(aggr_model)
+        with open(f"{model_save_path}/{self.elapsed_comm_rounds}.pkl", 'wb') as f:
+            pickle.dump(trainable_model_weights, f)
 
         # test on global test set
         aggr_model_acc = test_by_data_set(aggr_model,

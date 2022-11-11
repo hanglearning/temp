@@ -10,7 +10,7 @@ from model.mnist.cnn import CNN as MNIST_CNN
 from model.mnist.mlp import MLP as MNIST_MLP
 from server import Server
 from client import Client
-from util import create_model
+from util import *
 import wandb
 from dataset.datasource import DataLoaders
 from torchmetrics import MetricCollection, Accuracy, Precision, Recall
@@ -97,8 +97,10 @@ if __name__ == "__main__":
     args.log_dir = log_dirpath
     model_save_path = f"{args.log_dir}/models/globals"
     Path(model_save_path).mkdir(parents=True, exist_ok=True)
-    torch.save(model.state_dict(), f"{model_save_path}/comm_0")
-
+    trainable_model_weights = get_trainable_model_weights(model)
+    with open(f"{model_save_path}/0.pkl", 'wb') as f:
+        pickle.dump(trainable_model_weights, f)
+        
     train_loaders, test_loaders, global_test_loader = DataLoaders(num_users=args.num_clients,
                                               dataset_name=args.dataset,
                                               n_class=args.n_class,

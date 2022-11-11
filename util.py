@@ -71,6 +71,20 @@ metrics = MetricCollection([
     Recall(),
 ])
 
+def get_trainable_model_weights(model):
+    """
+    Args:
+        model (_torch model_): NN Model
+
+    Returns:
+        layer_to_param _dict_: you know!
+    """
+    layer_to_param = {} 
+    for name, param in nn.named_parameters():
+        if 'weight' in name:
+            layer_to_param[name] = param
+    return layer_to_param
+
 
 def train(
     model: nn.Module,
