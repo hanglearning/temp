@@ -90,6 +90,8 @@ if __name__ == "__main__":
     model = create_model(cls=models[args.dataset]
                          [args.arch], device=args.device)
 
+    trainable_model_weights = get_trainable_model_weights(model)
+
     exe_date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
     log_dirpath = f"{args.logs_base_folder}/POLL_BASE/{exe_date_time}"
     os.makedirs(log_dirpath)

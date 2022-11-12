@@ -82,7 +82,7 @@ def get_trainable_model_weights(model):
     layer_to_param = {} 
     for name, param in model.named_parameters():
         if 'weight' in name:
-            layer_to_param[name] = param
+            layer_to_param[name] = param.detach().numpy()
     return layer_to_param
 
 
