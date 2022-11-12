@@ -97,7 +97,7 @@ if __name__ == "__main__":
     os.makedirs(log_dirpath)
     
     args.log_dir = log_dirpath
-    model_save_path = f"{args.log_dir}/models/globals"
+    model_save_path = f"{args.log_dir}/models/globals_0"
     Path(model_save_path).mkdir(parents=True, exist_ok=True)
     trainable_model_weights = get_trainable_model_weights(model)
     with open(f"{model_save_path}/0.pkl", 'wb') as f:

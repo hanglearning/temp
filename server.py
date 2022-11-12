@@ -134,7 +134,7 @@ class Server():
         # compute average-model
         aggr_model = self.aggr(models, clients)
 
-        model_save_path = f"{self.args.log_dir}/models/globals"
+        model_save_path = f"{self.args.log_dir}/models/globals_0"
         trainable_model_weights = get_trainable_model_weights(aggr_model)
         with open(f"{model_save_path}/{self.elapsed_comm_rounds}.pkl", 'wb') as f:
             pickle.dump(trainable_model_weights, f)
