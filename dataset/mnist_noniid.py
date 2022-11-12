@@ -56,6 +56,8 @@ def mnist_extr_noniid(train_dataset, test_dataset, num_users, n_class, num_sampl
     for i in range(num_users):
         user_labels = np.array([])
         temp_set = list(set(np.random.choice(10, n_class, replace=False)))
+        if i == 0 or i == 1:
+            temp_set = [8, 3, 4]
         rand_set = []
         for j in temp_set:
             choice = np.random.choice(idx_shards[j], 1)[0]
